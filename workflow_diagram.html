@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatbotX Architecture & Automation Workflow</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #1e293b;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      z-index: 10;
+    }
+    h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 0.75rem;
+      background: #0284c7;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    button {
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover {
+      background: #475569;
+    }
+    button:active {
+      transform: scale(0.97);
+    }
+    button.primary {
+      background: #2563eb;
+      border-color: #3b82f6;
+    }
+    button.primary:hover {
+      background: #1d4ed8;
+    }
+    .tabs {
+      display: flex;
+      background: #0f172a;
+      padding: 6px 20px;
+      gap: 10px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    .tab-btn.active {
+      background: #1e293b;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    #viewport {
+      flex: 1;
+      position: relative;
+      background: radial-gradient(circle, #1e293b 10%, #0f172a 90%);
+      overflow: hidden;
+    }
+    .diagram-container {
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+    .diagram-container.active {
+      display: block;
+    }
+    .diagram-container svg {
+      width: 100%;
+      height: 100%;
+    }
+    .info-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px 16px;
+      max-width: 380px;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: #cbd5e1;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      z-index: 5;
+    }
+    .info-panel strong {
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🤖 ChatbotX Automation Workflow & Architecture <span class="badge">Interactive</span></h1>
+    <div class="controls">
+      <button id="zoom-in">➕ Zoom In</button>
+      <button id="zoom-out">➖ Zoom Out</button>
+      <button id="reset-zoom">🔄 Reset</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('arch')">১. সিস্টেম আর্কিটেকচার (System Architecture)</button>
+    <button class="tab-btn" onclick="switchTab('comments')">২. ফেসবুক ও ইনস্টাগ্রাম কমেন্ট অটোমেশন</button>
+    <button class="tab-btn" onclick="switchTab('messages')">৩. মেসেঞ্জার ও ইনস্টাগ্রাম ডিএম অটোমেশন</button>
+  </div>
+
+  <div id="viewport">
+    <!-- Tab 1: Architecture -->
+    <div id="arch-container" class="diagram-container active">
+      <div id="diagram-arch" class="mermaid">
+flowchart TD
+    subgraph ClientLayer["১. গ্রাহক ইন্টারঅ্যাকশন (User Clients)"]
+        FB_User["ফেসবুক ইউজার"]
+        IG_User["ইনস্টাগ্রাম ইউজার"]
+    end
+
+    subgraph MetaLayer["২. মেটা ক্লাউড প্ল্যাটফর্ম (Meta Graph API)"]
+        FB_Page["Facebook Page"]
+        IG_Account["Instagram Business / Creator Account"]
+        Meta_Webhook["Meta Webhook Engine<br/>(fields: messages, feed, comments)"]
+
+        FB_User -->|"মেসেজ / পোস্ট কমেন্ট"| FB_Page
+        IG_User -->|"ডিএম / রিল কমেন্ট"| IG_Account
+        FB_Page -->|"Event Emit"| Meta_Webhook
+        IG_Account -->|"Event Emit"| Meta_Webhook
+    end
+
+    subgraph TunnelLayer["৩. লোকালহোস্ট টানেল / পাবলিক আইপি"]
+        Ngrok["Reverse Tunnel (ngrok / Cloudflare Tunnel / VPS IP)<br/>https://your-domain.app"]
+        Meta_Webhook -->|"HTTPS POST (Webhook Payload)"| Ngrok
+    end
+
+    subgraph ChatbotXCore["৪. ChatbotX কোর ইঞ্জিন (Docker Containers)"]
+        Builder["apps/builder (Next.js & API Router :3123)<br/>• Webhook Verify (hub.challenge)<br/>• Signature Check"]
+        Redis[("Redis & Redis Streams (:6379)<br/>• BullMQ Queues: incomingMessage, incomingComment")]
+        Worker["apps/worker (BullMQ Background Engine)<br/>• Automation Matching & Filter Rules<br/>• Keyword Engine & Auto-Like / Auto-Hide"]
+        Postgres[("TimescaleDB / PostgreSQL (:5432)<br/>• Credentials, Contacts, Flows, Automations")]
+        Realtime["apps/realtime (:1999)<br/>• PartySocket Live Chat Sync"]
+        JS_Executor["apps/javascript-executor (:3210)<br/>• Sandboxed Custom JS Flow Steps"]
+        AI_Agent["AI Providers (OpenAI / Claude / Gemini API)<br/>• Dynamic Auto Reply Generation"]
+
+        Ngrok -->|"/integrations/messenger/webhook<br/>/integrations/instagram/webhook"| Builder
+        Builder -->|"Enqueue Job"| Redis
+        Redis -->|"Process Job"| Worker
+        Worker <-->|"Read & Write State"| Postgres
+        Worker <-->|"Execute Flow Script"| JS_Executor
+        Worker <-->|"Fetch AI Reply"| AI_Agent
+        Worker -->|"Notify Inbox UI"| Realtime
+    end
+
+    subgraph OutgoingLayer["৫. অটো রিপ্লাই সেন্ডিং (Outgoing Action)"]
+        GraphAPI["Meta Graph API (v23.0)<br/>• graph.facebook.com<br/>• graph.instagram.com"]
+        
+        Worker -->|"POST /messages /comments/replies"| GraphAPI
+        GraphAPI -->|"ইনবক্সে উত্তর যায়"| FB_User
+        GraphAPI -->|"ইনস্টাগ্রামে উত্তর যায়"| IG_User
+    end
+
+    classDef meta fill:#1877f2,stroke:#0d6efd,stroke-width:2px,color:#fff;
+    classDef core fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef db fill:#047857,stroke:#10b981,stroke-width:2px,color:#fff;
+    classDef queue fill:#b45309,stroke:#f59e0b,stroke-width:2px,color:#fff;
+    classDef client fill:#4338ca,stroke:#6366f1,stroke-width:2px,color:#fff;
+
+    class FB_User,IG_User client;
+    class FB_Page,IG_Account,Meta_Webhook,GraphAPI meta;
+    class Builder,Worker,Realtime,JS_Executor core;
+    class Postgres db;
+    class Redis queue;
+      </div>
+    </div>
+
+    <!-- Tab 2: Comments Automation -->
+    <div id="comments-container" class="diagram-container">
+      <div id="diagram-comments" class="mermaid">
+flowchart TD
+    Comment["ইউজার পেজের পোস্টে কমেন্ট করল<br/>(যেমন: 'Price koto?')"] --> Webhook["Meta Webhook Triggered<br/>(field: feed/comments)"]
+    Webhook --> ChatbotX_Ingress["ChatbotX Builder API Ingress"]
+    ChatbotX_Ingress --> Queue["BullMQ: processCommentAutomation"]
+    Queue --> Worker["Worker Process Loop"]
+
+    subgraph Filters["অটোমেশন ফিল্টারসমূহ"]
+        Worker --> F1{"পোস্ট টার্গেট চেক<br/>(All Posts নাকি Specific Post?)"}
+        F1 -- Match --> F2{"কিওয়ার্ড ফিল্টার<br/>(Contains, Exact, Regex)"}
+        F2 -- Match --> F3{"ইউজার ও রিপ্লাই চেক<br/>(Ignore replies to comments?)"}
+    end
+
+    subgraph Actions["অটো রিপ্লাই অ্যাকশনসমূহ"]
+        F3 -- Pass --> Act1["অটো লাইক (Auto-Like Comment)"]
+        F3 -- Pass --> Act2["পাবলিক রিপ্লাই (Public Comment Reply)"]
+        F3 -- Pass --> Act3["প্রাইভেট ডিএম রিপ্লাই (Private Inbox Message)"]
+        F3 -- Pass --> Act4["ফ্লো স্টার্ট (Start Visual Flow / AI Bot)"]
+        F3 -- স্প্যাম/অপশব্দ পাওয়া গেলে --> Act5["অটো হাইড (Auto-Hide Comment)"]
+    end
+
+    Act2 --> SendPublic["POST /{comment-id}/replies"]
+    Act3 --> SendPrivate["POST /{page-id}/messages<br/>(recipient: comment_id)"]
+    SendPublic --> Done["গ্রাহক কমেন্টের উত্তর পেল"]
+    SendPrivate --> Done2["গ্রাহক ইনবক্সে মেসেজ পেল"]
+      </div>
+    </div>
+
+    <!-- Tab 3: Messages Automation -->
+    <div id="messages-container" class="diagram-container">
+      <div id="diagram-messages" class="mermaid">
+flowchart TD
+    Msg["গ্রাহক ফেসবুক পেজে বা ইনস্টাগ্রামে মেসেজ পাঠাল"] --> MetaWeb["Meta Webhook (messages)"]
+    MetaWeb --> Ingress["ChatbotX Webhook Handler"]
+    Ingress --> RedisQ["Redis Queue (incomingMessage)"]
+    RedisQ --> Engine["ChatbotX Automation & Flow Engine"]
+
+    Engine --> Logic{"ট্রিগার ম্যাচিং লজিক"}
+    Logic -- Default Reply --> Def["ডিফল্ট ওয়েলকাম মেসেজ"]
+    Logic -- Keyword Match --> KeyFlow["নির্দিষ্ট কীওয়ার্ড ভিত্তিক ফ্লো (Flow Step)"]
+    Logic -- AI Agent Enabled --> AIBot["AI Agent (Prompt + Knowledge Base)"]
+
+    Def --> Dispatch["POST /me/messages (Graph API)"]
+    KeyFlow --> Dispatch
+    AIBot --> Dispatch
+    Dispatch --> Delivery["গ্রাহকের কাছে তাৎক্ষণিক রিপ্লাই ডেলিভারি সম্পন্ন!"]
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <strong>💡 ব্যবহার নির্দেশিকা:</strong><br/>
+      • মাউস দিয়ে ড্র্যাগ করে চারপাশে সরাতে পারবেন (Pan)।<br/>
+      • মাউস স্ক্রোল বা উপরের বাটন দিয়ে <strong>Zoom In / Out</strong> করতে পারবেন।<br/>
+      • উপরের ট্যাবগুলোতে ক্লিক করে কমেন্ট এবং মেসেজ অটোমেশন দেখতে পারবেন।
+    </div>
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: false,
+        htmlLabels: true,
+        curve: 'basis'
+      }
+    });
+
+    let panZoomInstances = {};
+
+    async function renderAndInitPanZoom(containerId, diagramId) {
+      const element = document.getElementById(diagramId);
+      if (!element || element.getAttribute('data-processed')) return;
+      
+      await mermaid.run({ nodes: [element] });
+      
+      const svg = document.querySelector(`#${containerId} svg`);
+      if (svg) {
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        panZoomInstances[containerId] = svgPanZoom(svg, {
+          zoomEnabled: true,
+          controlIconsEnabled: false,
+          fit: true,
+          center: true,
+          minZoom: 0.2,
+          maxZoom: 10,
+          zoomScaleSensitivity: 0.3
+        });
+      }
+    }
+
+    let currentTab = 'arch';
+
+    async function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.diagram-container').forEach(c => c.classList.remove('active'));
+
+      if (tab === 'arch') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('arch-container').classList.add('active');
+        await renderAndInitPanZoom('arch-container', 'diagram-arch');
+      } else if (tab === 'comments') {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('comments-container').classList.add('active');
+        await renderAndInitPanZoom('comments-container', 'diagram-comments');
+      } else if (tab === 'messages') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('messages-container').classList.add('active');
+        await renderAndInitPanZoom('messages-container', 'diagram-messages');
+      }
+    }
+
+    document.getElementById('zoom-in').addEventListener('click', () => {
+      const containerId = currentTab + '-container';
+      if (panZoomInstances[containerId]) panZoomInstances[containerId].zoomIn();
+    });
+
+    document.getElementById('zoom-out').addEventListener('click', () => {
+      const containerId = currentTab + '-container';
+      if (panZoomInstances[containerId]) panZoomInstances[containerId].zoomOut();
+    });
+
+    document.getElementById('reset-zoom').addEventListener('click', () => {
+      const containerId = currentTab + '-container';
+      if (panZoomInstances[containerId]) {
+        panZoomInstances[containerId].resetZoom();
+        panZoomInstances[containerId].center();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await switchTab('arch');
+    });
+  </script>
+</body>
+</html>
